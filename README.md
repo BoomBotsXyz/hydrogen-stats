@@ -16,3 +16,13 @@ To deploy to AWS:
 sam build --use-container
 sam deploy
 ```
+
+### endpoint
+
+``` bash
+curl https://stats.hydrogen.hysland.finance/pools/metadata/?chainID=80001&poolID=1001
+```
+
+``` js
+axios.get("https://stats.hydrogen.hysland.finance/pools/metadata/?chainID=80001&poolID=1001")
+```
