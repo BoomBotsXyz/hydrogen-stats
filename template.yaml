@@ -38,7 +38,7 @@ Resources:
       Runtime: nodejs14.x
       MemorySize: 128
       Timeout: 10
-      Role: !GetAtt HydrogenStatsLambdaExecutionRole.Arn
+      Role: !GetAtt LambdaExecutionRole.Arn
       Events:
         GetEvent:
           Type: Api
@@ -54,7 +54,7 @@ Resources:
       Runtime: nodejs14.x
       MemorySize: 128
       Timeout: 10
-      Role: !GetAtt HydrogenStatsLambdaExecutionRole.Arn
+      Role: !GetAtt LambdaExecutionRole.Arn
       Events:
         GetEvent:
           Type: Api
@@ -70,7 +70,7 @@ Resources:
       Runtime: nodejs14.x
       MemorySize: 128
       Timeout: 10
-      Role: !GetAtt HydrogenStatsLambdaExecutionRole.Arn
+      Role: !GetAtt LambdaExecutionRole.Arn
       Events:
         GetEvent:
           Type: Api
@@ -78,8 +78,22 @@ Resources:
             Path: /
             Method: get
             RestApiId: !Ref RestApi
+  TrackerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: HydrogenStatsTrackerFunction
+      Handler: api/tracker/tracker.handler
+      Runtime: nodejs14.x
+      MemorySize: 1024
+      Timeout: 900
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        ScheduledEvent:
+          Type: Schedule
+          Properties:
+            Schedule: rate(60 minutes)
   # lambda execution role
-  HydrogenStatsLambdaExecutionRole:
+  LambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
       RoleName: HydrogenStatsLambdaExecutionRole
