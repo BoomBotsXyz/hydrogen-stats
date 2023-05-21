@@ -1,0 +1,14 @@
+{
+  "name": "HydrogenStats",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {},
+  "dependencies": {
+    "axios": "^0.26.1",
+    "ethers": "^5.4.4",
+    "ethers-multicall-hysland-finance": "^0.2.4"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.771.0"
+  }
+}

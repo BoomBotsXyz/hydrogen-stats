@@ -1,0 +1,139 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  hydrogen-stats
+
+  Tracker for token prices
+
+Globals:
+  Function:
+    AutoPublishAlias: live
+    Tracing: Active
+    Environment:
+      Variables:
+        DEAD_LETTER_TOPIC: !Ref HydrogenStatsSnsTopic
+        DATA_BUCKET: stats.hydrogen.hysland.finance.data
+    DeadLetterQueue:
+      Type: SNS
+      TargetArn: !Ref HydrogenStatsSnsTopic
+
+Resources:
+  # Rest API
+  RestApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: HydrogenStatsApi
+      Domain:
+        DomainName: stats.hydrogen.hysland.finance
+        CertificateArn: arn:aws:acm:us-west-2:776862011846:certificate/511cc802-9b9c-46ef-bf6d-ac7088478dbf
+        Route53:
+          HostedZoneId: Z08644983A1W3TMJ7RHC6
+      StageName: prod
+      TracingEnabled: true
+  OptionsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: HydrogenStatsOptionsFunction
+      Handler: api/options.handler
+      Runtime: nodejs14.x
+      MemorySize: 128
+      Timeout: 10
+      Role: !GetAtt HydrogenStatsLambdaExecutionRole.Arn
+      Events:
+        GetEvent:
+          Type: Api
+          Properties:
+            Path: /
+            Method: options
+            RestApiId: !Ref RestApi
+  FaviconFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: HydrogenStatsFaviconFunction
+      Handler: api/favicon/get.handler
+      Runtime: nodejs14.x
+      MemorySize: 128
+      Timeout: 10
+      Role: !GetAtt HydrogenStatsLambdaExecutionRole.Arn
+      Events:
+        GetEvent:
+          Type: Api
+          Properties:
+            Path: /favicon.ico
+            Method: get
+            RestApiId: !Ref RestApi
+  IndexFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: HydrogenStatsIndexFunction
+      Handler: api/get.handler
+      Runtime: nodejs14.x
+      MemorySize: 128
+      Timeout: 10
+      Role: !GetAtt HydrogenStatsLambdaExecutionRole.Arn
+      Events:
+        GetEvent:
+          Type: Api
+          Properties:
+            Path: /
+            Method: get
+            RestApiId: !Ref RestApi
+  # lambda execution role
+  HydrogenStatsLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: HydrogenStatsLambdaExecutionRole
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: [lambda.amazonaws.com]
+            Action: sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+      Policies:
+        - PolicyName: HydrogenStatsLambdaExecutionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "sns:Publish"
+                Resource: !Ref HydrogenStatsSnsTopic
+              - Effect: Allow
+                Action:
+                  - "s3:GetObject"
+                  - "s3:DeleteObject"
+                  - "s3:ListBucket"
+                  - "s3:PutObject"
+                  - "s3:ReplicateObject"
+                  - "s3:RestoreObject"
+                Resource:
+                  - "arn:aws:s3:::stats.hydrogen.hysland.finance.data"
+                  - "arn:aws:s3:::stats.hydrogen.hysland.finance.data/*"
+                  - "arn:aws:s3:::assets.hysland.finance"
+                  - "arn:aws:s3:::assets.hysland.finance/*"
+  # Data Bucket
+  HydrogenStatsDataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: stats.hydrogen.hysland.finance.data
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      CorsConfiguration:
+        CorsRules:
+          - AllowedMethods:
+              - HEAD
+              - GET
+            AllowedOrigins:
+              - "*"
+            AllowedHeaders:
+              - "*"
+  HydrogenStatsSnsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: "Hydrogen Stats SNS Topic"
+      TopicName: "HydrogenStatsSnsTopic"
