@@ -83,11 +83,13 @@ async function fetchNucleusState(chainID) {
           modifyBalance(token, from, amountBN.mul(-1))
           modifyBalance(token, to, amountBN)
         } else if(event.event === "PoolCreated") {
-          newPoolIDs.push(event.args.poolID.toString())
-          state.pools[event.args.poolID.toString()] = {
+          let poolID = event.args.poolID.toString()
+          newPoolIDs.push(poolID)
+          state.pools[poolID] = {
             owner: AddressZero,
             tradeRequests: {}
           }
+          if(!state.internalBalancesByPool.hasOwnProperty(poolID)) state.internalBalancesByPool[poolID] = {}
         } else if(event.event === "Transfer") {
           state.pools[event.args.tokenId.toString()].owner = event.args.to
         } else if(event.event === "TradeRequestUpdated") {
@@ -95,6 +97,8 @@ async function fetchNucleusState(chainID) {
           poolID = poolID.toString()
           if(!state.pools[poolID].tradeRequests.hasOwnProperty(tokenA)) state.pools[poolID].tradeRequests[tokenA] = {}
           state.pools[poolID].tradeRequests[tokenA][tokenB] = { exchangeRate, locationB }
+          if(!state.internalBalancesByPool[poolID].hasOwnProperty(tokenA)) state.internalBalancesByPool[poolID][tokenA] = "0"
+          if(!state.internalBalancesByPool[poolID].hasOwnProperty(tokenB)) state.internalBalancesByPool[poolID][tokenB] = "0"
         } else if(event.event === "Approval") {
           // don't track approvals
         } else if(event.event === "ApprovalForAll") {
