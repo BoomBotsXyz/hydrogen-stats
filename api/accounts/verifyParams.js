@@ -1,5 +1,6 @@
 const ethers = require("ethers")
 const BN = ethers.BigNumber
+const { getAddress } = ethers.utils
 const { getNetworkSettings } = require("./../utils/getNetworkSettings")
 
 function verifyChainID(params) {
@@ -20,7 +21,7 @@ function verifyAccount(params) {
   var account = params["account"]
   if(!account) throw { name: "InputError", stack: 'account not given' }
   try {
-    var account2 = ethers.utils.getAddress(account)
+    var account2 = getAddress(account)
     return account2
   } catch(e) {
     throw { name: "InputError", stack: `account '${account}' invalid`}
