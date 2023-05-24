@@ -220,6 +220,22 @@ Resources:
             Path: /contract_uri
             Method: get
             RestApiId: !Ref RestApi
+  DeprecationNoticeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: HydrogenStatsDeprecationNoticeFunction
+      Handler: api/deprecation_notice/get.handler
+      Runtime: nodejs14.x
+      MemorySize: 1024
+      Timeout: 900
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetEvent:
+          Type: Api
+          Properties:
+            Path: /deprecation_notice
+            Method: get
+            RestApiId: !Ref RestApi
   # lambda execution role
   LambdaExecutionRole:
     Type: AWS::IAM::Role
