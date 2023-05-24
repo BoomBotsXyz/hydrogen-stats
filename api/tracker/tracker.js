@@ -11,7 +11,7 @@ const headers = {
 }
 
 async function tracker() {
-  let chainIDs = [80001]
+  var chainIDs = [80001]
   await Promise.all(chainIDs.map(fetchNucleusState))
 }
 

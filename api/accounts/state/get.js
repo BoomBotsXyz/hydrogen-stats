@@ -21,8 +21,8 @@ async function handle(event) {
   var internalBalances = nucleusState.internalBalancesByAccount[account] || {}
   var allPoolIDs = Object.keys(nucleusState.pools)
   var ownedPoolIDs = []
-  for(let i = 0; i < allPoolIDs.length; ++i) {
-    let poolID = allPoolIDs[i]
+  for(var i = 0; i < allPoolIDs.length; ++i) {
+    var poolID = allPoolIDs[i]
     if(nucleusState.pools[poolID].owner == account) ownedPoolIDs.push(poolID)
   }
   var accountState = {

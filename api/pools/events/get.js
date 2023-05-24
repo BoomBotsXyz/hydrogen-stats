@@ -17,14 +17,14 @@ const headers = {
 
 function eventAffectsPool(event, poolID) {
   if(event.event === "TokensTransferred") {
-    let from = event.args[1]
-    let to = event.args[2]
+    var from = event.args[1]
+    var to = event.args[2]
     function isPool(location) {
-      let locationType = parseInt(location.substring(0,4))
+      var locationType = parseInt(location.substring(0,4))
       if(locationType === 1 || locationType === 2) {
         return false
       } else if(locationType === 3) {
-        let eventPoolID = BN.from(`0x${location.substring(4,66)}`).toString()
+        var eventPoolID = BN.from(`0x${location.substring(4,66)}`).toString()
         return poolID == eventPoolID
       } else {
         errors.push(`Error processing transaction=${event.transactionHash} logIndex=${event.logIndex} TokensTransferred(from=${from}, to=${to}). Invalid location type '${locationType}'`)
@@ -32,19 +32,19 @@ function eventAffectsPool(event, poolID) {
     }
     return ( isPool(from) || isPool(to) )
   } else if(event.event === "PoolCreated") {
-    let eventPoolID = event.args[0]
+    var eventPoolID = event.args[0]
     return poolID == eventPoolID
   } else if(event.event === "Transfer") {
-    let eventPoolID = event.args[2]
+    var eventPoolID = event.args[2]
     return poolID == eventPoolID
   } else if(event.event === "TradeRequestUpdated") {
-    let eventPoolID = event.args[0]
+    var eventPoolID = event.args[0]
     return poolID == eventPoolID
   } else if(event.event === "Approval") {
-    let eventPoolID = event.args[2]
+    var eventPoolID = event.args[2]
     return poolID == eventPoolID
   } else if(event.event === "MarketOrderExecuted") {
-    let eventPoolID = event.args[0]
+    var eventPoolID = event.args[0]
     return poolID == eventPoolID
   }
   return false
@@ -52,17 +52,17 @@ function eventAffectsPool(event, poolID) {
 
 async function handle(event) {
   var { chainID, poolID } = verifyParams(event["queryStringParameters"])
-  let nucleusState = await fetchNucleusState(chainID)
+  var nucleusState = await fetchNucleusState(chainID)
   if(!nucleusState.pools.hasOwnProperty(poolID)) throw { name: "InputError", stack: `poolID ${poolID} does not exist on chain ${chainID}` }
-  let events = JSON.parse(await s3GetObjectPromise({ Bucket: "stats.hydrogen.hysland.finance.data", Key: `${chainID}/events.json` }))
-  let events2 = events.events.filter(event2 => eventAffectsPool(event2, poolID))
-  let blockNumbers = deduplicateArray(events2.map(event => event.blockNumber))
-  let blockTimestamps = {}
-  for(let i = 0; i < blockNumbers.length; ++i) {
-    let blockNumber = blockNumbers[i]
+  var events = JSON.parse(await s3GetObjectPromise({ Bucket: "stats.hydrogen.hysland.finance.data", Key: `${chainID}/events.json` }))
+  var events2 = events.events.filter(event2 => eventAffectsPool(event2, poolID))
+  var blockNumbers = deduplicateArray(events2.map(event => event.blockNumber))
+  var blockTimestamps = {}
+  for(var i = 0; i < blockNumbers.length; ++i) {
+    var blockNumber = blockNumbers[i]
     blockTimestamps[blockNumber] = events.blockTimestamps[blockNumber]
   }
-  let events3 = {
+  var events3 = {
     events: events2,
     blockTimestamps
   }

@@ -21,13 +21,13 @@ const headers = {
 // to keep this function simple we say no
 function eventAffectsAccount(event, account) {
   if(event.event === "TokensTransferred") {
-    let from = event.args[1]
-    let to = event.args[2]
+    var from = event.args[1]
+    var to = event.args[2]
     function isAccount(location) {
-      let locationType = parseInt(location.substring(0,4))
+      var locationType = parseInt(location.substring(0,4))
       if(locationType === 1 || locationType === 2) {
         if(location.substring(4, 26) != "0000000000000000000000") errors.push(`Error processing transaction=${event.transactionHash} logIndex=${event.logIndex} TokensTransferred(from=${from}, to=${to}). Invalid location type '${locationType}'`)
-        let eventAccount = getAddress(`0x${location.substring(26,66)}`)
+        var eventAccount = getAddress(`0x${location.substring(26,66)}`)
         return account == eventAccount
       } else if(locationType === 3) {
         return false
@@ -37,13 +37,13 @@ function eventAffectsAccount(event, account) {
     }
     return ( isAccount(from) || isAccount(to) )
   } else if(event.event === "PoolCreated") {
-    let eventAccount = event.args[0]
+    var eventAccount = event.args[0]
     return account == eventAccount
   } else if(event.event === "Transfer") {
-    let eventAccount = event.args[2]
+    var eventAccount = event.args[2]
     return account == eventAccount
   } else if(event.event === "TradeRequestUpdated") {
-    let eventAccount = event.args[0]
+    var eventAccount = event.args[0]
     return account == eventAccount
   } else if(event.event === "ApprovalForAll") {
     return ( (account == event.args[0]) || (account == event.args[1]) )
@@ -54,15 +54,15 @@ function eventAffectsAccount(event, account) {
 async function handle(event) {
   var { chainID, account } = verifyParams(event["queryStringParameters"])
   await fetchNucleusState(chainID)
-  let events = JSON.parse(await s3GetObjectPromise({ Bucket: "stats.hydrogen.hysland.finance.data", Key: `${chainID}/events.json` }))
-  let events2 = events.events.filter(event2 => eventAffectsAccount(event2, account))
-  let blockNumbers = deduplicateArray(events2.map(event => event.blockNumber))
-  let blockTimestamps = {}
-  for(let i = 0; i < blockNumbers.length; ++i) {
-    let blockNumber = blockNumbers[i]
+  var events = JSON.parse(await s3GetObjectPromise({ Bucket: "stats.hydrogen.hysland.finance.data", Key: `${chainID}/events.json` }))
+  var events2 = events.events.filter(event2 => eventAffectsAccount(event2, account))
+  var blockNumbers = deduplicateArray(events2.map(event => event.blockNumber))
+  var blockTimestamps = {}
+  for(var i = 0; i < blockNumbers.length; ++i) {
+    var blockNumber = blockNumbers[i]
     blockTimestamps[blockNumber] = events.blockTimestamps[blockNumber]
   }
-  let events3 = {
+  var events3 = {
     events: events2,
     blockTimestamps
   }
