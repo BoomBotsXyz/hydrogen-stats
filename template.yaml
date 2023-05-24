@@ -204,6 +204,22 @@ Resources:
             Path: /accounts/events
             Method: get
             RestApiId: !Ref RestApi
+  ContractUriFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: HydrogenStatsContractUriFunction
+      Handler: api/contract_uri/get.handler
+      Runtime: nodejs14.x
+      MemorySize: 1024
+      Timeout: 900
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetEvent:
+          Type: Api
+          Properties:
+            Path: /contract_uri
+            Method: get
+            RestApiId: !Ref RestApi
   # lambda execution role
   LambdaExecutionRole:
     Type: AWS::IAM::Role
