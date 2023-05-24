@@ -7,7 +7,7 @@ const { range, sortBNs, readJsonFile, deduplicateArray } = require("./../utils/m
 const { s3GetObjectPromise, s3PutObjectPromise, snsPublishError } = require("./../utils/aws")
 const { getProvider, getMulticallProvider, multicallChunked, fetchEvents, findDeployBlock } = require("./../utils/network")
 const { getNetworkSettings } = require("./../utils/getNetworkSettings")
-const { createPoolMetadata } = require("./../pools/metadata/createPoolMetadata")
+const { storePool } = require("./../pools/storePool")
 
 const ABI_NUCLEUS = readJsonFile("./data/abi/Hydrogen/HydrogenNucleus.json")
 const ABI_ERC20 = readJsonFile("./data/abi/other/ERC20.json")
@@ -131,7 +131,7 @@ async function fetchNucleusState(chainID) {
       }
       // write to s3
       state.lastScannedBlock = latestBlock
-      let promises = newPoolIDs.map(poolID => createPoolMetadata(chainID, poolID))
+      var promises = newPoolIDs.map(poolID => storePool(chainID, state.nucleusAddress, poolID))
       promises.push(s3PutObjectPromise({ Bucket: 'stats.hydrogen.hysland.finance.data', Key: s3KeyState, Body: JSON.stringify(state), ContentType: "application/json" }))
       promises.push(s3PutObjectPromise({ Bucket: 'stats.hydrogen.hysland.finance.data', Key: s3KeyEvents, Body: JSON.stringify(events), ContentType: "application/json" }))
       await Promise.all(promises)

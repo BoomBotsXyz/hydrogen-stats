@@ -14,6 +14,18 @@ function getNetworkSettings(chainID) {
   const KNOWN_CHAINS = [80001];
   if(!KNOWN_CHAINS.includes(chainID)) throw new Error(`chainID '${chainID}' not supported`);
 
+  // name of each chain
+  const CHAIN_NAMES = {
+    [1]: "Ethereum",
+    [5]: "Goerli",
+    [111555111]: "Sepolia",
+    [137]: "Polygon",
+    [80001]: "Mumbai",
+    [1313161554]: "Aurora",
+    [1313161555]: "AuroraTestnet"
+  };
+  let chainName = CHAIN_NAMES.hasOwnProperty(chainID) ? CHAIN_NAMES[chainID] : "unknown";
+
   // number of blocks to wait to ensure finality
   const CONFIRMATIONS = {
     [1]: 1,
@@ -43,7 +55,7 @@ function getNetworkSettings(chainID) {
   };
   let minScanWriteBlocks = MIN_SCAN_WRITE_BLOCKS.hasOwnProperty(chainID) ? MIN_SCAN_WRITE_BLOCKS[chainID] : 0;
 
-  let networkSettings = {confirmations, isTestnet, minScanWriteBlocks};
+  let networkSettings = {chainName, confirmations, isTestnet, minScanWriteBlocks};
   return networkSettings;
 }
 exports.getNetworkSettings = getNetworkSettings
