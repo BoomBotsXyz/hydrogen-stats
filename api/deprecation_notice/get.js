@@ -12,7 +12,8 @@ const headers = {
 
 // todo: s3
 const currentAddresses = {
-  "80001": "0xd2174BfC96C96608C2EC7Bd8b5919f9e3603d37f"
+  "80001": "0xd2174BfC96C96608C2EC7Bd8b5919f9e3603d37f",
+  "84531": "0xfE4d3341B87e106fD718f71B71c5430082f01836"
 }
 
 async function handle(event) {

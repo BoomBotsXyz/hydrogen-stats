@@ -6,12 +6,13 @@
 // 80001: polygon mumbai
 // 1313161554: aurora
 // 1313161555: aurora testnet
+// 84531: base goerli
 // 31337: hardhat testnet
 
 // given a chainID, returns some settings to use for the network
 function getNetworkSettings(chainID) {
   //const KNOWN_CHAINS = [1, 5, 111555111, 137, 80001, 1313161554, 1313161555];
-  const KNOWN_CHAINS = [80001];
+  const KNOWN_CHAINS = [80001, 84531];
   if(!KNOWN_CHAINS.includes(chainID)) throw new Error(`chainID '${chainID}' not supported`);
 
   // name of each chain
@@ -22,7 +23,8 @@ function getNetworkSettings(chainID) {
     [137]: "Polygon",
     [80001]: "Mumbai",
     [1313161554]: "Aurora",
-    [1313161555]: "AuroraTestnet"
+    [1313161555]: "AuroraTestnet",
+    [84531]: "Base Goerli"
   };
   let chainName = CHAIN_NAMES.hasOwnProperty(chainID) ? CHAIN_NAMES[chainID] : "unknown";
 
@@ -34,12 +36,13 @@ function getNetworkSettings(chainID) {
     [137]: 5,
     [80001]: 5,
     [1313161554]: 5,
-    [1313161555]: 5
+    [1313161555]: 5,
+    [84531]: 5
   };
   let confirmations = CONFIRMATIONS.hasOwnProperty(chainID) ? CONFIRMATIONS[chainID] : 1;
 
   // testnets
-  const TESTNETS = [5, 111555111, 80001, 1313161555];
+  const TESTNETS = [5, 111555111, 80001, 1313161555, 84531];
   let isTestnet = TESTNETS.includes(chainID);
 
   // used to debounce s3 writes. if no events were found, only write to s3 every x blocks
@@ -51,7 +54,8 @@ function getNetworkSettings(chainID) {
     [137]: 150,
     [80001]: 150,
     [1313161554]: 150,
-    [1313161555]: 150
+    [1313161555]: 150,
+    [84531]: 150
   };
   let minScanWriteBlocks = MIN_SCAN_WRITE_BLOCKS.hasOwnProperty(chainID) ? MIN_SCAN_WRITE_BLOCKS[chainID] : 0;
 
