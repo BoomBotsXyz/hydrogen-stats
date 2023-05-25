@@ -125,13 +125,10 @@ function createPoolImage(chainID, poolID, rng) {
   var p2 = createP2(rng)
   var p3 = createP3(rng)
   var poolIDstr = poolID + ""
-  var chainIDstr = chainID + ""
   var networkSettings = getNetworkSettings(chainID)
   var chainName = networkSettings.chainName
   var textColor = randomTextColor(rng)
-  var poolIDBoxWidth = 83 + 7 * poolIDstr.length
-  var chainNameBoxWidth = 77 + 7 * chainName.length
-  var chainNameBoxX = 350 - 29 - chainNameBoxWidth
+  var chainNameX = 350 - 36 - chainName.length * 10
   var svg = (template
     .replace(/{{p0}}/g, p0)
     .replace(/{{p1}}/g, p1)
@@ -140,9 +137,7 @@ function createPoolImage(chainID, poolID, rng) {
     .replace(/{{textColor}}/g, textColor)
     .replace(/{{poolID}}/g, poolIDstr)
     .replace(/{{chainName}}/g, chainName)
-    .replace(/{{poolIDBoxWidth}}/g, poolIDBoxWidth)
-    .replace(/{{chainNameBoxWidth}}/g, chainNameBoxWidth)
-    .replace(/{{chainNameBoxX}}/g, chainNameBoxX)
+    .replace(/{{chainNameX}}/g, chainNameX)
   )
   return svg
 }
