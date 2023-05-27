@@ -106,6 +106,7 @@ async function fetchNucleusState(chainID) {
           var poolID = event.args.poolID.toString()
           newPoolIDs.push(poolID)
           state.pools[poolID] = {
+            poolID: poolID,
             owner: AddressZero,
             tradeRequests: {}
           }

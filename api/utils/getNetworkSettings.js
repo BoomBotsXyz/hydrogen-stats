@@ -28,6 +28,19 @@ function getNetworkSettings(chainID) {
   };
   let chainName = CHAIN_NAMES.hasOwnProperty(chainID) ? CHAIN_NAMES[chainID] : "unknown";
 
+  // name of each chain
+  const CHAIN_NAMES_ANALYTICS = {
+    [1]: "ethereum",
+    [5]: "goerli",
+    [111555111]: "sepolia",
+    [137]: "polygon",
+    [80001]: "polygon_mumbai",
+    [1313161554]: "aurora",
+    [1313161555]: "aurora_testnet",
+    [84531]: "base_goerli"
+  };
+  let chainNameAnalytics = CHAIN_NAMES_ANALYTICS.hasOwnProperty(chainID) ? CHAIN_NAMES_ANALYTICS[chainID] : "unknown";
+
   // number of blocks to wait to ensure finality
   const CONFIRMATIONS = {
     [1]: 1,
@@ -59,7 +72,7 @@ function getNetworkSettings(chainID) {
   };
   let minScanWriteBlocks = MIN_SCAN_WRITE_BLOCKS.hasOwnProperty(chainID) ? MIN_SCAN_WRITE_BLOCKS[chainID] : 0;
 
-  let networkSettings = {chainName, confirmations, isTestnet, minScanWriteBlocks};
+  let networkSettings = {chainName, chainNameAnalytics, confirmations, isTestnet, minScanWriteBlocks};
   return networkSettings;
 }
 exports.getNetworkSettings = getNetworkSettings

@@ -78,11 +78,12 @@ function randomBackgroundColor(rng) {
 }
 
 function createPoolMetadata(chainID, poolID) {
+  var networkSettings = getNetworkSettings(chainID)
   var poolIDstr = poolID + ""
   var poolType = poolIDstr.substring(poolIDstr.length-1) == "1" ? "Limit Order Pool" : "Grid Order Pool"
   var metadata = {
     "description": "This NFT represents a Hydrogen Pool. The owner of this NFT can modify the pool and withdraw its tokens.",
-    "external_url": `https://analytics.hydrogen.hysland.finance/pools/?chainID=${chainID}&poolID=${poolID}`,
+    "external_url": `https://analytics.hydrogen.hysland.finance/#/${networkSettings.chainNameAnalytics}/pools/${poolID}`,
     "image": `https://assets.hysland.finance/hydrogen/hpt/${chainID}/${poolID}.svg`,
     "name": `Hydrogen Pool Token #${poolID}`,
     "attributes": [{
@@ -150,7 +151,7 @@ async function storePool(chainID, nucleusAddress, poolID) {
   // write to s3
   await Promise.all([
     s3PutObjectPromise({ Bucket: "stats.hydrogen.hysland.finance.data", Key: `${chainID}/hpt_metadata/${poolID}.json`, Body: JSON.stringify(metadata), ContentType: "application/json" }),
-    s3PutObjectPromise({ Bucket: "assets.hysland.finance", Key: `hydrogen/hpt/${chainID}/${poolID}.svg`, Body: svg, ContentType: "image/svg+xml"})
+    s3PutObjectPromise({ Bucket: "assets.hysland.finance", Key: `hydrogen/hpt/${chainID}/${poolID}.svg`, Body: svg, ContentType: "image/svg+xml", CacheControl: "max-age=864000"})
   ])
 }
 exports.storePool = storePool
