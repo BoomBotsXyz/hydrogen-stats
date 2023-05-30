@@ -204,6 +204,22 @@ Resources:
             Path: /accounts/events
             Method: get
             RestApiId: !Ref RestApi
+  TokensFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: HydrogenStatsTokensFunction
+      Handler: api/tokens/get.handler
+      Runtime: nodejs14.x
+      MemorySize: 1024
+      Timeout: 900
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetEvent:
+          Type: Api
+          Properties:
+            Path: /tokens
+            Method: get
+            RestApiId: !Ref RestApi
   ContractUriFunction:
     Type: AWS::Serverless::Function
     Properties:
