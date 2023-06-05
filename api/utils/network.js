@@ -47,7 +47,8 @@ exports.fetchBlock = fetchBlock
 // fetch events that occurred in a contract with the given event name between startBlock and endBlock
 async function fetchEvents(contract, filter, startBlock, endBlock) {
   if(endBlock == "latest") endBlock = await contract.provider.getBlockNumber()
-  return _fetchEvents(contract, filter, startBlock, endBlock, 0)
+  var events = await _fetchEvents(contract, filter, startBlock, endBlock, 0)
+  return sortAndDeduplicateEvents(events)
 }
 exports.fetchEvents = fetchEvents;
 
@@ -67,6 +68,7 @@ async function _fetchEvents(contract, filter, startBlock, endBlock, depth) {
       }
       */
       // log response size exceeded. recurse down
+      if(startBlock == endBlock) throw("_fetchEvents(): 0 blocks and still error")
       var midBlock = Math.floor((startBlock+endBlock)/2)
       var [left, right] = [ [], [] ]
       if(depth < 8) {
@@ -83,6 +85,20 @@ async function _fetchEvents(contract, filter, startBlock, endBlock, depth) {
     }
   })
 }
+
+function sortAndDeduplicateEvents(events) {
+  //var events2 = JSON.parse(JSON.stringify(events))
+  var eventDict = {}
+  for(var i = 0; i < events.length; i++) {
+    var event = events[i]
+    if(event.logIndex >= 10000) throw("logIndex >= 10000")
+    var key = event.blockNumber*10000 + event.logIndex
+    eventDict[key] = event
+  }
+  var keys = Object.keys(eventDict).sort()
+  return keys.map(key => eventDict[key])
+}
+exports.sortAndDeduplicateEvents = sortAndDeduplicateEvents
 
 // returns true if code is deployed at the given address and block
 // returns false if the address is invalid or no code was deployed yet
