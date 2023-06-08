@@ -3,6 +3,6 @@
 exports.handler = async function(event) {
   return {
     statusCode: 301,
-    headers: {"Location":"https://hysland.finance/favicon.ico"}
+    headers: {"Location":"https://hydrogendefi.xyz/favicon.ico"}
   }
 }

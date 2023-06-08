@@ -35,7 +35,7 @@ async function handle(event) {
   var networkSettings = getNetworkSettings(chainID)
   // fetch tokens from s3
   var s3Key = `${chainID}/tokens.json`
-  var tokens = JSON.parse(await s3GetObjectPromise({Bucket: "stats.hydrogen.hysland.finance.data", Key: s3Key}))
+  var tokens = JSON.parse(await s3GetObjectPromise({Bucket: "stats.hydrogendefi.xyz.data", Key: s3Key}))
   // setup coingecko query
   var coingeckoIDSet = {}
   for(var i = 0; i < tokens.length; i++) {

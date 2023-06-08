@@ -17,7 +17,7 @@ const headers = {
 async function handle(event) {
   var { chainID } = verifyParams(event["queryStringParameters"])
   await fetchNucleusState(chainID)
-  return await s3GetObjectPromise({ Bucket: "stats.hydrogen.hysland.finance.data", Key: `${chainID}/events.json` })
+  return await s3GetObjectPromise({ Bucket: "stats.hydrogendefi.xyz.data", Key: `${chainID}/events.json` })
 }
 
 exports.handler = async function(event) {

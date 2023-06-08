@@ -17,13 +17,13 @@ async function handle(event) {
   var s3Key = `${chainID}/hpt_metadata/${poolID}.json`
   // try to get metadata from cache
   try {
-    return await s3GetObjectPromise({ Bucket: "stats.hydrogen.hysland.finance.data", Key: s3Key })
+    return await s3GetObjectPromise({ Bucket: "stats.hydrogendefi.xyz.data", Key: s3Key })
   } catch(e) {}
   // metadata not cached. fetch and cache state
   await fetchNucleusState(chainID)
   // try to get metadata from cache again
   try {
-    return await s3GetObjectPromise({ Bucket: "stats.hydrogen.hysland.finance.data", Key: s3Key })
+    return await s3GetObjectPromise({ Bucket: "stats.hydrogendefi.xyz.data", Key: s3Key })
   } catch(e) {}
   // if not cached, token does not exist
   throw { name: "InputError", stack: `poolID ${poolID} does not exist on chain ${chainID}` }

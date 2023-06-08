@@ -54,7 +54,7 @@ async function handle(event) {
   var { chainID, poolID } = verifyParams(event["queryStringParameters"])
   var nucleusState = await fetchNucleusState(chainID)
   if(!nucleusState.pools.hasOwnProperty(poolID)) throw { name: "InputError", stack: `poolID ${poolID} does not exist on chain ${chainID}` }
-  var events = JSON.parse(await s3GetObjectPromise({ Bucket: "stats.hydrogen.hysland.finance.data", Key: `${chainID}/events.json` }))
+  var events = JSON.parse(await s3GetObjectPromise({ Bucket: "stats.hydrogendefi.xyz.data", Key: `${chainID}/events.json` }))
   var events2 = events.events.filter(event2 => eventAffectsPool(event2, poolID))
   var blockNumbers = deduplicateArray(events2.map(event => event.blockNumber))
   var blockTimestamps = {}

@@ -54,7 +54,7 @@ function eventAffectsAccount(event, account) {
 async function handle(event) {
   var { chainID, account } = verifyParams(event["queryStringParameters"])
   await fetchNucleusState(chainID)
-  var events = JSON.parse(await s3GetObjectPromise({ Bucket: "stats.hydrogen.hysland.finance.data", Key: `${chainID}/events.json` }))
+  var events = JSON.parse(await s3GetObjectPromise({ Bucket: "stats.hydrogendefi.xyz.data", Key: `${chainID}/events.json` }))
   var events2 = events.events.filter(event2 => eventAffectsAccount(event2, account))
   var blockNumbers = deduplicateArray(events2.map(event => event.blockNumber))
   var blockTimestamps = {}

@@ -11,7 +11,7 @@ const headers = {
 }
 
 async function handle(event) {
-  return '{"name":"Hydrogen Pool Tokens","description":"Hydrogen Pool Tokens represent the ownership of a pool in the Hydrogen Exchange.","image":"https://assets.hysland.finance/hydrogen/hpt/base.svg","external_link":"https://hydrogen.hysland.finance"}'
+  return '{"name":"Hydrogen Pool Tokens","description":"Hydrogen Pool Tokens represent the ownership of a pool in the Hydrogen Exchange.","image":"https://assets.hydrogendefi.xyz/hydrogen/hpt/base.svg","external_link":"https://hydrogendefi.xyz"}'
 }
 
 exports.handler = async function(event) {

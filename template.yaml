@@ -3,7 +3,7 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   hydrogen-stats
 
-  Tracker for token prices
+  Tracker for Hydrogen stats
 
 Globals:
   Function:
@@ -12,7 +12,7 @@ Globals:
     Environment:
       Variables:
         DEAD_LETTER_TOPIC: !Ref HydrogenStatsSnsTopic
-        DATA_BUCKET: stats.hydrogen.hysland.finance.data
+        DATA_BUCKET: stats.hydrogendefi.xyz.data
     DeadLetterQueue:
       Type: SNS
       TargetArn: !Ref HydrogenStatsSnsTopic
@@ -24,10 +24,10 @@ Resources:
     Properties:
       Name: HydrogenStatsApi
       Domain:
-        DomainName: stats.hydrogen.hysland.finance
-        CertificateArn: arn:aws:acm:us-west-2:776862011846:certificate/511cc802-9b9c-46ef-bf6d-ac7088478dbf
+        DomainName: stats.hydrogendefi.xyz
+        CertificateArn: arn:aws:acm:us-west-2:776862011846:certificate/57a67298-28b4-4c50-9cc4-3470934796fa
         Route53:
-          HostedZoneId: Z08644983A1W3TMJ7RHC6
+          HostedZoneId: Z0806338NRYLUT7WSH5Q
       StageName: prod
       TracingEnabled: true
   OptionsFunction:
@@ -284,17 +284,17 @@ Resources:
                   - "s3:ReplicateObject"
                   - "s3:RestoreObject"
                 Resource:
-                  - "arn:aws:s3:::stats.hydrogen.hysland.finance.data"
-                  - "arn:aws:s3:::stats.hydrogen.hysland.finance.data/*"
-                  - "arn:aws:s3:::stats-cache.hydrogen.hysland.finance"
-                  - "arn:aws:s3:::stats-cache.hydrogen.hysland.finance/*"
-                  - "arn:aws:s3:::assets.hysland.finance"
-                  - "arn:aws:s3:::assets.hysland.finance/*"
+                  - "arn:aws:s3:::stats.hydrogendefi.xyz.data"
+                  - "arn:aws:s3:::stats.hydrogendefi.xyz.data/*"
+                  - "arn:aws:s3:::stats-cdn.hydrogendefi.xyz"
+                  - "arn:aws:s3:::stats-cdn.hydrogendefi.xyz/*"
+                  - "arn:aws:s3:::assets.hydrogendefi.xyz"
+                  - "arn:aws:s3:::assets.hydrogendefi.xyz/*"
   # Data Bucket
   HydrogenStatsDataBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: stats.hydrogen.hysland.finance.data
+      BucketName: stats.hydrogendefi.xyz.data
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
@@ -308,11 +308,11 @@ Resources:
               - "*"
             AllowedHeaders:
               - "*"
-  # begin stats-cache.hydrogen.hysland.finance bucket and distribution
-  HydrogenStatsCacheDataWebsiteBucket:
+  # begin stats-cdn.hydrogendefi.xyz bucket and distribution
+  HydrogenStatsCdnDataWebsiteBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: stats-cache.hydrogen.hysland.finance
+      BucketName: stats-cdn.hydrogendefi.xyz
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
@@ -331,31 +331,31 @@ Resources:
       Tags:
         - Key: Project
           Value: client
-  HydrogenStatsCacheDataWebsiteBucketPolicy:
+  HydrogenStatsCdnDataWebsiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket: !Ref HydrogenStatsCacheDataWebsiteBucket
+      Bucket: !Ref HydrogenStatsCdnDataWebsiteBucket
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
         - Action:
             - "s3:GetObject"
           Effect: "Allow"
-          Resource: arn:aws:s3:::stats-cache.hydrogen.hysland.finance/*
+          Resource: arn:aws:s3:::stats-cdn.hydrogendefi.xyz/*
           Principal:
             AWS: !Join ["", ["arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ", "ENZYGQ4CE2XJG"] ]
-  HydrogenStatsCacheDataWebsiteDistribution:
+  HydrogenStatsCdnDataWebsiteDistribution:
     Type: AWS::CloudFront::Distribution
     Properties:
       DistributionConfig:
         Origins:
-          - Id: HydrogenStatsCacheDataWebsiteBucket
-            DomainName: stats-cache.hydrogen.hysland.finance.s3.amazonaws.com
+          - Id: HydrogenStatsCdnDataWebsiteBucket
+            DomainName: stats-cdn.hydrogendefi.xyz.s3.amazonaws.com
             S3OriginConfig:
               OriginAccessIdentity: !Join ["", ["origin-access-identity/cloudfront/", "ENZYGQ4CE2XJG"] ]
         Enabled: 'true'
         Aliases:
-          - stats-cache.hydrogen.hysland.finance
+          - stats-cdn.hydrogendefi.xyz
         DefaultCacheBehavior:
           AllowedMethods:
             - GET
@@ -367,13 +367,13 @@ Resources:
             - OPTIONS
           Compress: true
           ViewerProtocolPolicy: redirect-to-https
-          TargetOriginId: HydrogenStatsCacheDataWebsiteBucket
+          TargetOriginId: HydrogenStatsCdnDataWebsiteBucket
           CachePolicyId: "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
           OriginRequestPolicyId: "88a5eaf4-2fd4-4709-b370-b4c650ea3fcf"
           ResponseHeadersPolicyId: "5cc3b908-e619-4b99-88e5-2cf7f45965bd"
         PriceClass: PriceClass_100
         ViewerCertificate:
-          AcmCertificateArn: arn:aws:acm:us-east-1:776862011846:certificate/f8b4e196-2da8-404b-880e-4af6cc6af2ea
+          AcmCertificateArn: arn:aws:acm:us-east-1:776862011846:certificate/114d2743-9bb1-4391-adc5-3178d37c8b68
           MinimumProtocolVersion: TLSv1.2_2018
           SslSupportMethod: sni-only
         HttpVersion: http2

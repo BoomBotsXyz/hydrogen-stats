@@ -12,8 +12,8 @@ const { storePool } = require("./../pools/storePool")
 const ABI_NUCLEUS = readJsonFile("./data/abi/Hydrogen/HydrogenNucleus.json")
 const ABI_ERC20 = readJsonFile("./data/abi/other/ERC20.json")
 
-const statsBucket = 'stats.hydrogen.hysland.finance.data'
-const statsCacheBucket = 'stats-cache.hydrogen.hysland.finance'
+const statsBucket = 'stats.hydrogendefi.xyz.data'
+const statsCacheBucket = 'stats-cdn.hydrogendefi.xyz'
 
 async function fetchNucleusState(chainID) {
   // setup

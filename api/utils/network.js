@@ -10,7 +10,7 @@ const { s3GetObjectPromise } = require("./aws")
 // gets an ethers provider for a given chainID
 async function getProvider(chainID) {
   let providers = JSON.parse(await s3GetObjectPromise({
-    Bucket: "stats.hydrogen.hysland.finance.data",
+    Bucket: "stats.hydrogendefi.xyz.data",
     Key: "providers.json"
   }, cache=true))
   if(!Object(providers).hasOwnProperty(chainID)) {

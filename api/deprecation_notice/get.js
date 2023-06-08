@@ -28,7 +28,7 @@ async function handle(event) {
   metadata = {
     ...metadata,
     "external_url": ``,
-    "image": `https://assets.hysland.finance/deprecated.png`,
+    "image": `https://assets.hydrogendefi.xyz/deprecated.png`,
     "name": `deprecated`,
     "attributes": []
   }

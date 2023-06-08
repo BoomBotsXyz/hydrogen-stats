@@ -11,7 +11,7 @@ const headers = {
 // Lambda handler
 exports.handler = async function(event) {
   try {
-    var res = await s3GetObjectPromise({ Bucket: 'stats.hydrogen.hysland.finance.data', Key: 'index.html' })
+    var res = await s3GetObjectPromise({ Bucket: 'stats.hydrogendefi.xyz.data', Key: 'index.html' })
     return {
       statusCode: 200,
       headers: headers,
