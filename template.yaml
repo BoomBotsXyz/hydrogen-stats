@@ -286,8 +286,8 @@ Resources:
                 Resource:
                   - "arn:aws:s3:::stats.hydrogen.hysland.finance.data"
                   - "arn:aws:s3:::stats.hydrogen.hysland.finance.data/*"
-                  - "arn:aws:s3:::stats-cache.hydrogen.hysland.finance.data"
-                  - "arn:aws:s3:::stats-cache.hydrogen.hysland.finance.data/*"
+                  - "arn:aws:s3:::stats-cache.hydrogen.hysland.finance"
+                  - "arn:aws:s3:::stats-cache.hydrogen.hysland.finance/*"
                   - "arn:aws:s3:::assets.hysland.finance"
                   - "arn:aws:s3:::assets.hysland.finance/*"
   # Data Bucket

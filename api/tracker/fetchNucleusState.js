@@ -12,14 +12,15 @@ const { storePool } = require("./../pools/storePool")
 const ABI_NUCLEUS = readJsonFile("./data/abi/Hydrogen/HydrogenNucleus.json")
 const ABI_ERC20 = readJsonFile("./data/abi/other/ERC20.json")
 
-var bucket = 'stats.hydrogen.hysland.finance.data'
+const statsBucket = 'stats.hydrogen.hysland.finance.data'
+const statsCacheBucket = 'stats-cache.hydrogen.hysland.finance'
 
 async function fetchNucleusState(chainID) {
   // setup
   var s3KeyState = `${chainID}/state.json`
   var s3KeyEvents = `${chainID}/events.json`
   var s3KeyTokens = `${chainID}/tokens.json`
-  var state = JSON.parse(await s3GetObjectPromise({ Bucket: bucket, Key: s3KeyState }))
+  var state = JSON.parse(await s3GetObjectPromise({ Bucket: statsBucket, Key: s3KeyState }))
   var mcProvider = await getMulticallProvider(chainID)
   var provider = mcProvider._provider
   var networkSettings = getNetworkSettings(chainID)
@@ -47,7 +48,7 @@ async function fetchNucleusState(chainID) {
       if(numBlocksScanned >= networkSettings.minScanWriteBlocks) {
         // write to s3
         state.lastScannedBlock = latestBlock
-        await s3PutObjectPromise({ Bucket: bucket, Key: s3KeyState, Body: JSON.stringify(state), ContentType: "application/json" })
+        await s3PutObjectPromise({ Bucket: statsBucket, Key: s3KeyState, Body: JSON.stringify(state), ContentType: "application/json" })
       }
     }
   }
@@ -62,8 +63,8 @@ async function fetchNucleusState(chainID) {
   // writes new data to s3
   async function rebuildState(state, newEvents) {
     var [eventsData, tokensData] = await Promise.all([
-      s3GetObjectPromise({ Bucket: bucket, Key: s3KeyEvents }).then(JSON.parse),
-      s3GetObjectPromise({ Bucket: bucket, Key: s3KeyTokens }).then(JSON.parse),
+      s3GetObjectPromise({ Bucket: statsBucket, Key: s3KeyEvents }).then(JSON.parse),
+      s3GetObjectPromise({ Bucket: statsCacheBucket, Key: s3KeyTokens }).then(JSON.parse),
     ])
     var knownTokens = {}
     for(var i = 0; i < tokensData.length; i++) knownTokens[tokensData[i].address] = true
@@ -192,8 +193,8 @@ async function fetchNucleusState(chainID) {
     }
     // write to s3
     var promises = newPoolIDs.map(poolID => storePool(chainID, state.nucleusAddress, poolID))
-    promises.push(s3PutObjectPromise({ Bucket: bucket, Key: s3KeyState, Body: JSON.stringify(state), ContentType: "application/json" }))
-    promises.push(s3PutObjectPromise({ Bucket: bucket, Key: s3KeyEvents, Body: JSON.stringify(eventsData), ContentType: "application/json" }))
+    promises.push(s3PutObjectPromise({ Bucket: statsBucket, Key: s3KeyState, Body: JSON.stringify(state), ContentType: "application/json" }))
+    promises.push(s3PutObjectPromise({ Bucket: statsBucket, Key: s3KeyEvents, Body: JSON.stringify(eventsData), ContentType: "application/json" }))
     // handle tokens
     var missingTokens = []
     var addrs = Object.keys(tokenSet)
@@ -210,7 +211,7 @@ async function fetchNucleusState(chainID) {
           "status": "unverified"
         })
       }
-      promises.push(s3PutObjectPromise({ Bucket: bucket, Key: s3KeyTokens, Body: JSON.stringify(tokensData), ContentType: "application/json" }))
+      promises.push(s3PutObjectPromise({ Bucket: statsCacheBucket, Key: s3KeyTokens, Body: JSON.stringify(tokensData), ContentType: "application/json" }))
     }
     // flush promises
     await Promise.all(promises)
@@ -220,9 +221,9 @@ async function fetchNucleusState(chainID) {
   async function getTokenMetadata(addr) {
     var token = new ethers.Contract(addr, ABI_ERC20, provider)
     var [name, symbol, decimals] = await Promise.all([
-      tryGet(() => token.name(), "unknown"),
-      tryGet(() => token.symbol(), "unknown"),
-      tryGet(() => token.decimals(), 0),
+      tryGet(async () => token.name(), "unknown"),
+      tryGet(async () => token.symbol(), "unknown"),
+      tryGet(async () => token.decimals(), 0),
     ])
     return {name, symbol, decimals}
   }
