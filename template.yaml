@@ -140,86 +140,6 @@ Resources:
             Path: /pools/metadata
             Method: get
             RestApiId: !Ref RestApi
-  PoolStateFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: HydrogenStatsPoolStateFunction
-      Handler: api/pools/state/get.handler
-      Runtime: nodejs14.x
-      MemorySize: 1024
-      Timeout: 900
-      Role: !GetAtt LambdaExecutionRole.Arn
-      Events:
-        GetEvent:
-          Type: Api
-          Properties:
-            Path: /pools/state
-            Method: get
-            RestApiId: !Ref RestApi
-  PoolEventsFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: HydrogenStatsPoolEventsFunction
-      Handler: api/pools/events/get.handler
-      Runtime: nodejs14.x
-      MemorySize: 1024
-      Timeout: 900
-      Role: !GetAtt LambdaExecutionRole.Arn
-      Events:
-        GetEvent:
-          Type: Api
-          Properties:
-            Path: /pools/events
-            Method: get
-            RestApiId: !Ref RestApi
-  AccountStateFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: HydrogenStatsAccountStateFunction
-      Handler: api/accounts/state/get.handler
-      Runtime: nodejs14.x
-      MemorySize: 1024
-      Timeout: 900
-      Role: !GetAtt LambdaExecutionRole.Arn
-      Events:
-        GetEvent:
-          Type: Api
-          Properties:
-            Path: /accounts/state
-            Method: get
-            RestApiId: !Ref RestApi
-  AccountEventsFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: HydrogenStatsAccountEventsFunction
-      Handler: api/accounts/events/get.handler
-      Runtime: nodejs14.x
-      MemorySize: 1024
-      Timeout: 900
-      Role: !GetAtt LambdaExecutionRole.Arn
-      Events:
-        GetEvent:
-          Type: Api
-          Properties:
-            Path: /accounts/events
-            Method: get
-            RestApiId: !Ref RestApi
-  TokensFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: HydrogenStatsTokensFunction
-      Handler: api/tokens/get.handler
-      Runtime: nodejs14.x
-      MemorySize: 1024
-      Timeout: 900
-      Role: !GetAtt LambdaExecutionRole.Arn
-      Events:
-        GetEvent:
-          Type: Api
-          Properties:
-            Path: /tokens
-            Method: get
-            RestApiId: !Ref RestApi
   ContractUriFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -381,30 +301,30 @@ Resources:
       Tags:
         - Key: Project
           Value: client
-    DependsOn: HydrogenStatsCacheDataWebsiteBucketPolicy
-  HydrogenStatsCacheDataDnsZoneIPv4:
+    DependsOn: HydrogenStatsCdnDataWebsiteBucketPolicy
+  HydrogenStatsCdnDataDnsZoneIPv4:
     Type: AWS::Route53::RecordSet
     Properties:
       AliasTarget:
-        DNSName: !GetAtt HydrogenStatsCacheDataWebsiteDistribution.DomainName
+        DNSName: !GetAtt HydrogenStatsCdnDataWebsiteDistribution.DomainName
         EvaluateTargetHealth: false
         HostedZoneId: Z2FDTNDATAQYW2
-      HostedZoneName: hysland.finance.
-      Name: stats-cache.hydrogen.hysland.finance
+      HostedZoneName: hydrogendefi.xyz.
+      Name: stats-cdn.hydrogendefi.xyz
       Type: A
-    DependsOn: HydrogenStatsCacheDataWebsiteDistribution
-  HydrogenStatsCacheDataDnsZoneIPv6:
+    DependsOn: HydrogenStatsCdnDataWebsiteDistribution
+  HydrogenStatsCdnDataDnsZoneIPv6:
     Type: AWS::Route53::RecordSet
     Properties:
       AliasTarget:
-        DNSName: !GetAtt HydrogenStatsCacheDataWebsiteDistribution.DomainName
+        DNSName: !GetAtt HydrogenStatsCdnDataWebsiteDistribution.DomainName
         EvaluateTargetHealth: false
         HostedZoneId: Z2FDTNDATAQYW2
-      HostedZoneName: hysland.finance.
-      Name: stats-cache.hydrogen.hysland.finance
+      HostedZoneName: hydrogendefi.xyz.
+      Name: stats-cdn.hydrogendefi.xyz
       Type: AAAA
-    DependsOn: HydrogenStatsCacheDataWebsiteDistribution
-  # end stats-cache.hydrogen.hysland.finance bucket and distribution
+    DependsOn: HydrogenStatsCdnDataWebsiteDistribution
+  # end stats-cdn.hydrogendefi.xyz bucket and distribution
   HydrogenStatsSnsTopic:
     Type: AWS::SNS::Topic
     Properties:
