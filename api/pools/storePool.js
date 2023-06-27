@@ -84,7 +84,7 @@ function createPoolMetadata(chainID, poolID) {
   var metadata = {
     "description": "This NFT represents a Hydrogen Pool. The owner of this NFT can modify the pool and withdraw its tokens.",
     "external_url": `https://analytics.hydrogendefi.xyz/#/${networkSettings.chainNameAnalytics}/pools/${poolID}`,
-    "image": `https://assets.hydrogendefi.xyz/hydrogen/hpt/${chainID}/${poolID}.svg`,
+    "image": `https://assets.hydrogendefi.xyz/hpt/${chainID}/${poolID}.svg`,
     "name": `Hydrogen Pool Token #${poolID}`,
     "attributes": [{
       "trait_type": "Pool Type",
@@ -151,7 +151,7 @@ async function storePool(chainID, nucleusAddress, poolID) {
   // write to s3
   await Promise.all([
     s3PutObjectPromise({ Bucket: "stats.hydrogendefi.xyz.data", Key: `${chainID}/hpt_metadata/${poolID}.json`, Body: JSON.stringify(metadata), ContentType: "application/json" }),
-    s3PutObjectPromise({ Bucket: "assets.hydrogendefi.xyz", Key: `hydrogen/hpt/${chainID}/${poolID}.svg`, Body: svg, ContentType: "image/svg+xml", CacheControl: "max-age=864000"})
+    s3PutObjectPromise({ Bucket: "assets.hydrogendefi.xyz", Key: `hpt/${chainID}/${poolID}.svg`, Body: svg, ContentType: "image/svg+xml", CacheControl: "max-age=864000"})
   ])
 }
 exports.storePool = storePool

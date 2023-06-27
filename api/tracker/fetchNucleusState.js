@@ -51,6 +51,7 @@ async function fetchNucleusState(chainID) {
         await s3PutObjectPromise({ Bucket: statsBucket, Key: s3KeyState, Body: JSON.stringify(state), ContentType: "application/json" })
       }
     }
+    state.lastScannedBlock = latestBlock
   }
   return state
 
