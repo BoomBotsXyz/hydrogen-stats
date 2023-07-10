@@ -20,7 +20,7 @@ async function fetchNucleusState(chainID) {
   var s3KeyState = `${chainID}/state.json`
   var s3KeyEvents = `${chainID}/events.json`
   var s3KeyTokens = `${chainID}/tokens.json`
-  var state = JSON.parse(await s3GetObjectPromise({ Bucket: statsBucket, Key: s3KeyState }))
+  var state = JSON.parse(await s3GetObjectPromise({ Bucket: statsCacheBucket, Key: s3KeyState }))
   var mcProvider = await getMulticallProvider(chainID)
   var provider = mcProvider._provider
   var networkSettings = getNetworkSettings(chainID)
@@ -48,7 +48,7 @@ async function fetchNucleusState(chainID) {
       if(numBlocksScanned >= networkSettings.minScanWriteBlocks) {
         // write to s3
         state.lastScannedBlock = latestBlock
-        await s3PutObjectPromise({ Bucket: statsBucket, Key: s3KeyState, Body: JSON.stringify(state), ContentType: "application/json" })
+        await s3PutObjectPromise({ Bucket: statsCacheBucket, Key: s3KeyState, Body: JSON.stringify(state), ContentType: "application/json" })
       }
     }
     state.lastScannedBlock = latestBlock
@@ -64,7 +64,7 @@ async function fetchNucleusState(chainID) {
   // writes new data to s3
   async function rebuildState(state, newEvents) {
     var [eventsData, tokensData] = await Promise.all([
-      s3GetObjectPromise({ Bucket: statsBucket, Key: s3KeyEvents }).then(JSON.parse),
+      s3GetObjectPromise({ Bucket: statsCacheBucket, Key: s3KeyEvents }).then(JSON.parse),
       s3GetObjectPromise({ Bucket: statsCacheBucket, Key: s3KeyTokens }).then(JSON.parse),
     ])
     var knownTokens = {}
@@ -194,8 +194,8 @@ async function fetchNucleusState(chainID) {
     }
     // write to s3
     var promises = newPoolIDs.map(poolID => storePool(chainID, state.nucleusAddress, poolID))
-    promises.push(s3PutObjectPromise({ Bucket: statsBucket, Key: s3KeyState, Body: JSON.stringify(state), ContentType: "application/json" }))
-    promises.push(s3PutObjectPromise({ Bucket: statsBucket, Key: s3KeyEvents, Body: JSON.stringify(eventsData), ContentType: "application/json" }))
+    promises.push(s3PutObjectPromise({ Bucket: statsCacheBucket, Key: s3KeyState, Body: JSON.stringify(state), ContentType: "application/json" }))
+    promises.push(s3PutObjectPromise({ Bucket: statsCacheBucket, Key: s3KeyEvents, Body: JSON.stringify(eventsData), ContentType: "application/json" }))
     // handle tokens
     var missingTokens = []
     var addrs = Object.keys(tokenSet)
