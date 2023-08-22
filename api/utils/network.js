@@ -1,6 +1,7 @@
 const ethers = require("ethers")
 const BN = ethers.BigNumber
 const multicall = require("ethers-multicall-hysland-finance")
+const axios = require("axios")
 
 const { AddressZero } = ethers.constants
 
@@ -31,6 +32,7 @@ async function getMulticallProvider(chainID) {
   if(chainNum == 1313161554) mcProvider._multicallAddress = "0xdc1522872E440cF9cD48E237EAFEfaa5F157Ca1d"
   if(chainNum == 1313161555) mcProvider._multicallAddress = "0x8f81207F59A4f86d68608fF90b259A0927242967"
   if(chainNum == 4002)       mcProvider._multicallAddress = "0x8f81207F59A4f86d68608fF90b259A0927242967"
+  if(chainNum == 8453)       mcProvider._multicallAddress = "0xcA11bde05977b3631167028862bE2a173976CA11"
   if(chainNum == 84531)      mcProvider._multicallAddress = "0x13F51B7b96f420b0F7153279f771edAa27d70dF6"
   return mcProvider
 }
@@ -198,3 +200,14 @@ async function multicallChunkedDict(mcProvider, callsDict, blockTag="latest", ch
   return resultsDict
 }
 exports.multicallChunkedDict = multicallChunkedDict
+
+async function axiosGet(url) {
+  try {
+    var res = await axios.get(url)
+    var data = res.data
+    return data
+  } catch(e) {
+    throw new Error(`Axios was unable to fetch '${url}'\n${e.toString()}`)
+  }
+}
+exports.axiosGet = axiosGet

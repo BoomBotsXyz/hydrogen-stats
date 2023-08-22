@@ -12,14 +12,13 @@ const { storePool } = require("./../pools/storePool")
 const ABI_NUCLEUS = readJsonFile("./data/abi/Hydrogen/HydrogenNucleus.json")
 const ABI_ERC20 = readJsonFile("./data/abi/other/ERC20.json")
 
-const statsBucket = 'stats.hydrogendefi.xyz.data'
 const statsCacheBucket = 'stats-cdn.hydrogendefi.xyz'
 
 async function fetchNucleusState(chainID) {
   // setup
-  var s3KeyState = `${chainID}/state.json`
-  var s3KeyEvents = `${chainID}/events.json`
-  var s3KeyTokens = `${chainID}/tokens.json`
+  var s3KeyState = `${chainID}/v1.0.0/state.json`
+  var s3KeyEvents = `${chainID}/v1.0.0/events.json`
+  var s3KeyTokens = `${chainID}/v1.0.0/tokens.json`
   var state = JSON.parse(await s3GetObjectPromise({ Bucket: statsCacheBucket, Key: s3KeyState }))
   var mcProvider = await getMulticallProvider(chainID)
   var provider = mcProvider._provider
@@ -182,6 +181,9 @@ async function fetchNucleusState(chainID) {
         state.pools[poolID].tradeRequests[tokenA][tokenB] = { exchangeRate, locationB }
         checkNonNullTokenBalanceAtPool(tokenA, poolID)
         checkNonNullTokenBalanceAtPool(tokenB, poolID)
+      } else if(event.event === "WrappedGasTokenSet") {
+        var [wgas] = event.args
+        state.wrappedGasToken = wgas
       } else if(event.event === "Approval") {
         // don't track approvals
       } else if(event.event === "ApprovalForAll") {

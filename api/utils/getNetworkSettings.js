@@ -12,7 +12,7 @@
 // given a chainID, returns some settings to use for the network
 function getNetworkSettings(chainID) {
   //const KNOWN_CHAINS = [1, 5, 111555111, 137, 80001, 1313161554, 1313161555];
-  const KNOWN_CHAINS = [80001, 84531];
+  const KNOWN_CHAINS = [8453, 84531, 80001];
   if(!KNOWN_CHAINS.includes(chainID)) throw new Error(`chainID '${chainID}' not supported`);
 
   // name of each chain
@@ -24,7 +24,8 @@ function getNetworkSettings(chainID) {
     [80001]: "Mumbai",
     [1313161554]: "Aurora",
     [1313161555]: "AuroraTestnet",
-    [84531]: "Base Goerli"
+    [8453]: "Base",
+    [84531]: "Base Goerli",
   };
   let chainName = CHAIN_NAMES.hasOwnProperty(chainID) ? CHAIN_NAMES[chainID] : "unknown";
 
@@ -37,7 +38,8 @@ function getNetworkSettings(chainID) {
     [80001]: "polygon_mumbai",
     [1313161554]: "aurora",
     [1313161555]: "aurora_testnet",
-    [84531]: "base_goerli"
+    [8453]: "base",
+    [84531]: "base_goerli",
   };
   let chainNameAnalytics = CHAIN_NAMES_ANALYTICS.hasOwnProperty(chainID) ? CHAIN_NAMES_ANALYTICS[chainID] : "unknown";
 
@@ -46,11 +48,12 @@ function getNetworkSettings(chainID) {
     [1]: 1,
     [5]: 1,
     [111555111]: 1,
-    [137]: 5,
-    [80001]: 5,
-    [1313161554]: 5,
-    [1313161555]: 5,
-    [84531]: 5
+    [137]: 1,
+    [80001]: 1,
+    [1313161554]: 1,
+    [1313161555]: 1,
+    [8453]: 1,
+    [84531]: 1,
   };
   let confirmations = CONFIRMATIONS.hasOwnProperty(chainID) ? CONFIRMATIONS[chainID] : 1;
 
@@ -68,7 +71,8 @@ function getNetworkSettings(chainID) {
     [80001]: 150,
     [1313161554]: 150,
     [1313161555]: 150,
-    [84531]: 150
+    [8453]: 150,
+    [84531]: 150,
   };
   let minScanWriteBlocks = MIN_SCAN_WRITE_BLOCKS.hasOwnProperty(chainID) ? MIN_SCAN_WRITE_BLOCKS[chainID] : 0;
 

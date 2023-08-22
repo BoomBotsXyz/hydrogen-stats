@@ -37,7 +37,7 @@ function findOptimalPath(nucleusState, tokenInAddress, tokenOutAddress, maxAmoun
       }
     }
   }
-  if(searchResults.length == 0) throw { name: "PathNotFoundError", stack: "No paths found. Verify the token addresses or create a limit order." }
+  if(searchResults.length == 0) throw { name: "PathNotFoundError", stack: '{"error": "No paths found. Verify the token addresses or create a limit order."}' }
   // step 2: math
   var bestPath = undefined
   for(var pathIndex = 0; pathIndex < searchResults.length; pathIndex++) {

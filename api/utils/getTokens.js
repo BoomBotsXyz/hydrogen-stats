@@ -23,15 +23,23 @@ exports.getTokensBySymbol = getTokensBySymbol
 */
 
 function getTokensByAddress(tokenMetadataList) {
-  var tokensByAddress = {}
-  tokenMetadataList.forEach(token => tokensByAddress[token.address] = token)
-  return tokensByAddress
+  try {
+    var tokensByAddress = {}
+    tokenMetadataList.forEach(token => tokensByAddress[token.address] = token)
+    return tokensByAddress
+  } catch(e) {
+    throw new Error(`Error in getTokensByAddress()\n${tokenMetadataList}\n${e.toString()}`)
+  }
 }
 exports.getTokensByAddress = getTokensByAddress
 
 function getTokensBySymbol(tokenMetadataList) {
-  var tokensBySymbol = {}
-  tokenMetadataList.forEach(token => tokensBySymbol[token.symbol] = token)
-  return tokensBySymbol
+  try {
+    var tokensBySymbol = {}
+    tokenMetadataList.forEach(token => tokensBySymbol[token.symbol] = token)
+    return tokensBySymbol
+  } catch(e) {
+    throw new Error(`Error in getTokensBySymbol()\n${tokenMetadataList}\n${e.toString()}`)
+  }
 }
 exports.getTokensBySymbol = getTokensBySymbol

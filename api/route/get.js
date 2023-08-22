@@ -7,7 +7,7 @@ const fs = require("fs")
 const axios = require("axios")
 const { withBackoffRetries } = require("./../utils/misc")
 const { s3GetObjectPromise, s3PutObjectPromise, snsPublishError } = require("./../utils/aws")
-const { getProvider, getMulticallProvider, multicallChunkedDict } = require("./../utils/network")
+const { getProvider, getMulticallProvider, multicallChunkedDict, axiosGet } = require("./../utils/network")
 const { verifyParams } = require("./inputValidation")
 const { fetchNucleusState } = require("./../tracker/fetchNucleusState")
 //const { getTradeRequestsByTokens } = require("./getTradeRequestsByTokens")
@@ -28,47 +28,17 @@ const headers = {
   "Access-Control-Allow-Methods": "OPTIONS,GET,POST,PUT,DELETE"
 }
 
+const statsCacheBucket = 'stats-cdn.hydrogendefi.xyz'
+
 async function route(params) {
   params = verifyParams(params)
-  // todo: remove this. temp override to support true weth
-  if(params.tokenInAddress == "0x4200000000000000000000000000000000000006") params.tokenInAddress = "0xEa0B5E9AFa37C1cA61779deAB8527eAE62b30367"
-  if(params.tokenOutAddress == "0x4200000000000000000000000000000000000006") params.tokenOutAddress = "0xEa0B5E9AFa37C1cA61779deAB8527eAE62b30367"
 
   var { chainID, tokenInAddress, tokenOutAddress, amount, swapType } = params
 
-  //var res = `Received params: ${JSON.stringify(params, undefined, 2)}`
-  //return res
-  /*
-  // step 1: setup
   // fetch state
-  var url = `https://stats.hydrogendefi.xyz/state/?chainID=${chainID}`
-  var nucleusState = (await axios.get(url)).data
-  //var tradeRequestsByTokens = getTradeRequestsByTokens(nucleusState)
-  // vars
-  var paths = []
-  var amountLeft = amount
-  // step 2: search
-  while(amountLeft.gt(0)) {
-    var maxAmount = amountLeft
-    var nextPath = findOptimalPath(nucleusState, tokenInAddress, tokenOutAddress, maxAmount, swapType)
-    paths.push(nextPath)
-    if(swapType == "exactIn") {
-      amountLeft = amountLeft.sub(nextPath.amountIn)
-    } else {
-      amountLeft = amountLeft.sub(nextPath.amountOut)
-    }
-    if(amountLeft.gt(0)) {
-      nucleusState = adjustNucleusState(nucleusState, nextPath)
-    }
-  }
-  */
-  // fetch state
-  var stateUrl = `https://stats.hydrogendefi.xyz/state/?chainID=${chainID}`
-  var tokensUrl = `https://stats-cdn.hydrogendefi.xyz/${chainID}/tokens.json`
   var [nucleusState, tokens, block, ethPrice] = await Promise.all([
-    //axios.get(stateUrl).then(res => res.data),
     fetchNucleusState(chainID),
-    axios.get(tokensUrl).then(res => res.data),
+    s3GetObjectPromise({Bucket: statsCacheBucket, Key: `${chainID}/v1.0.0/tokens.json`}).then(res => JSON.parse(res)),
     getProvider(chainID).then(provider => provider.getBlock("latest")),
     fetchCurrentEthPrice(),
   ])

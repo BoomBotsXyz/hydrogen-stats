@@ -1,8 +1,9 @@
 // responsible for returning a list of tokens and token price data
 
+const axios = require("axios")
 const { s3GetObjectPromise, snsPublishError } = require("./../utils/aws")
 const { getNetworkSettings } = require("./../utils/getNetworkSettings")
-const axios = require("axios")
+const { axiosGet } = require("./../utils/network")
 
 // Define headers
 const headers = {
@@ -48,8 +49,7 @@ async function handle(event) {
   // execute query
   var baseURL = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids="
   var url = `${baseURL}${coingeckoIDs.join(",")}`
-  var res = await axios.get(url)
-  var data = res.data
+  var data = await axiosGet(url)
   result.coingeckoData = data
   return JSON.stringify(result)
 }
