@@ -7,8 +7,9 @@ const { Base64 } = require("./../utils/Base64")
 
 const template = readFile("./data/svg/hpt.hbs")
 
-// note: the random number generator is seeded based on the chainID and poolID
+// note: the random number generator is seeded based on the chainID, nucleusAddress, and poolID
 // subsequent runs will generate the same random svg
+// different inputs will generate different random svg
 function createRandomNumberGenerator(seed) {
   var generate_seed = MurmurHash3(seed)
   var rng = SimpleFastCounter32(generate_seed(), generate_seed(), generate_seed(), generate_seed())
@@ -144,7 +145,7 @@ function createPoolImage(chainID, poolID, rng) {
 }
 
 async function storePool(chainID, nucleusAddress, poolID) {
-  // assumes chainID and poolID already verified
+  // assumes chainID, nucleusAddress, and poolID already verified
   var rng = createRandomNumberGenerator(`${chainID}_${nucleusAddress}_${poolID}`)
   var metadata = createPoolMetadata(chainID, poolID)
   var svg = createPoolImage(chainID, poolID, rng)

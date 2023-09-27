@@ -1,0 +1,38 @@
+<svg width="350" height="350" viewBox="0 0 350 350" xmlns="http://www.w3.org/2000/svg" xmlns:xlink='http://www.w3.org/1999/xlink'>
+  <defs>
+    <filter id="f1">
+      <feImage
+        result="p0"
+        xlink:href="data:image/svg+xml;base64,{{p0}}"/>
+      <feImage
+        result="p1"
+        xlink:href="data:image/svg+xml;base64,{{p1}}"/>
+      <feImage
+        result="p2"
+        xlink:href="data:image/svg+xml;base64,{{p2}}"/>
+      <feImage
+        result="p3"
+        xlink:href="data:image/svg+xml;base64,{{p3}}"/>
+      <feBlend mode="overlay" in="p0" in2="p1"/>
+      <feBlend mode="exclusion" in2="p2"/>
+      <feBlend mode="overlay" in2="p3" result="blendOut"/>
+      <feGaussianBlur in="blendOut" stdDeviation="42"/>
+    </filter>
+    <clipPath id="corners">
+      <rect width="350" height="350" rx="42" ry="42"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#corners)">
+    <rect fill="825792" x="0px" y="0px" width="350px" height="350px"/>
+    <rect style="filter: url(#f1)" x="0px" y="0px" width="350px" height="350px"/>
+    <rect x="8" y="8" width="334" height="334" rx="34" ry="34" fill="rgba(0,0,0,0)" stroke="rgba(255,255,255,0.1)" stroke-width="16px"/>
+    <rect x="0" y="0" width="350" height="350" rx="42" ry="42" fill="rgba(0,0,0,0)" stroke="rgba(255,255,255,0.2)"/>
+    <rect x="16" y="16" width="318" height="318" rx="26" ry="26" fill="rgba(0,0,0,0)" stroke="rgba(255,255,255,0.2)"/>
+  </g>
+  <g>
+    <text y="44px" x="36px" fill="{{textColor}}" font-family="'Courier New', monospace" font-weight="50" font-size="16px" paint-order="stroke" stroke="#000000" stroke-width="1px">1</text>
+    <text y="44px" x="265px" fill="{{textColor}}" font-family="'Courier New', monospace" font-weight="50" font-size="16px" paint-order="stroke" stroke="#000000" stroke-width="1px">1.008</text>
+    <text y="210px" x="50%" width="226px" text-anchor="middle" fill="{{textColor}}" font-family="'Courier New', monospace" font-weight="500" font-size="200px" paint-order="stroke" stroke="#000000" stroke-width="3px">H</text>
+    <text y="260px" x="50%" width="226px" text-anchor="middle" fill="{{textColor}}" font-family="'Courier New', monospace" font-weight="200" font-size="32px" paint-order="stroke" stroke="#000000" stroke-width="2px">Hydrogen</text>
+  </g>
+</svg>
