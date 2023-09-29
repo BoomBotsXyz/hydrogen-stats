@@ -14,9 +14,7 @@ function groupPathsToHops(paths) {
       var descriptor = `${poolID}-${tokenA}-${tokenB}`
       // is known. aggregate
       if(hopsDict.hasOwnProperty(descriptor)) {
-        hopsDict[descriptor].amountAMM = hopsDict[descriptor].amountAMM.add(path.hops[i].amountAMM)
         hopsDict[descriptor].amountAMT = hopsDict[descriptor].amountAMT.add(path.hops[i].amountAMT)
-        hopsDict[descriptor].amountBMM = hopsDict[descriptor].amountBMM.add(path.hops[i].amountBMM)
         hopsDict[descriptor].amountBMT = hopsDict[descriptor].amountBMT.add(path.hops[i].amountBMT)
       }
       // unknown. add new
@@ -26,10 +24,7 @@ function groupPathsToHops(paths) {
           poolID: path.hops[i].poolID,
           tokenB: tokenB,
           tokenA: tokenA,
-          exchangeRate: path.hops[i].exchangeRate,
-          amountAMM: BN.from(path.hops[i].amountAMM),
           amountAMT: BN.from(path.hops[i].amountAMT),
-          amountBMM: BN.from(path.hops[i].amountBMM),
           amountBMT: BN.from(path.hops[i].amountBMT),
         }
       }
@@ -89,10 +84,7 @@ function orderHops(hopsDict) {
       poolID: hop.poolID,
       tokenB: hop.tokenB,
       tokenA: hop.tokenA,
-      exchangeRate: hop.exchangeRate,
-      amountAMM: hop.amountAMM.toString(),
       amountAMT: hop.amountAMT.toString(),
-      amountBMM: hop.amountBMM.toString(),
       amountBMT: hop.amountBMT.toString(),
     }
   })

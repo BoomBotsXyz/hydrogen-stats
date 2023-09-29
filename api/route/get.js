@@ -88,7 +88,6 @@ async function route(params) {
     quoteDecimals: quoteDecimals,
 
     protocol: "Hydrogen",
-    paths: paths,
     hops: hops,
     txdata: txdata,
 
