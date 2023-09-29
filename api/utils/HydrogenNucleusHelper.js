@@ -16,6 +16,10 @@ class HydrogenNucleusHelper {
 
   // location functions
 
+  static LOCATION_FLAG_EXTERNAL_ADDRESS = "0x0400000000000000000000000000000000000000000000000000000000000001";
+  static LOCATION_FLAG_INTERNAL_ADDRESS = "0x0400000000000000000000000000000000000000000000000000000000000002";
+  static LOCATION_FLAG_POOL             = "0x0400000000000000000000000000000000000000000000000000000000000003";
+
   // encode an external address as a location
   static externalAddressToLocation(address) {
     var addr = address.substring(2).toLowerCase();

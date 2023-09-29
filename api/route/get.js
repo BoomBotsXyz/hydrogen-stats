@@ -13,6 +13,8 @@ const { fetchNucleusState } = require("./../tracker/fetchNucleusState")
 //const { getTradeRequestsByTokens } = require("./getTradeRequestsByTokens")
 //const { adjustNucleusState } = require("./adjustNucleusState")
 const { findPaths } = require("./findPaths")
+const { optimizePaths } = require("./optimizePaths")
+const { encodeMarketOrderTransaction } = require("./encodeMarketOrderTransaction")
 const { getTokensByAddress } = require("./../utils/getTokens")
 const { oneToken, fetchCurrentEthPrice } = require("./../utils/price")
 /*
@@ -44,20 +46,23 @@ async function route(params) {
   ])
   // search
   var paths = findPaths(params, nucleusState)
+  var hops = optimizePaths(paths)
   // other return data
   var amountIn = Zero
   var amountOut = Zero
   var gasUsePerMarketOrder = BN.from(185_000)
-  var numMarketOrders = 0
+  var numMarketOrders = hops.length
   for(var pathIndex = 0; pathIndex < paths.length; pathIndex++) {
     var path = paths[pathIndex]
     amountIn = amountIn.add(path.amountIn)
     amountOut = amountOut.add(path.amountOut)
-    numMarketOrders += path.hops.length
   }
+  params.amountIn = amountIn
+  params.amountOut = amountOut
+  var txdata = encodeMarketOrderTransaction(params, hops)
   var gasPriceWei = block.baseFeePerGas
   var gasUseEstimate = gasUsePerMarketOrder.mul(numMarketOrders)
-  var gasUseEstimateQuote = BN.from(gasPriceWei).mul(gasUseEstimate).mul(ethPrice).div(oneToken(18))
+  var gasUseEstimateQuote = BN.from(gasPriceWei).mul(gasUseEstimate).mul(ethPrice).div(WeiPerEther)
   var tokensByAddress = getTokensByAddress(tokens)
   var tokenIn = tokensByAddress[tokenInAddress]
   var tokenOut = tokensByAddress[tokenOutAddress]
@@ -84,6 +89,8 @@ async function route(params) {
 
     protocol: "Hydrogen",
     paths: paths,
+    hops: hops,
+    txdata: txdata,
 
     gasPriceWei: gasPriceWei.toString(),
     gasUseEstimate: gasUseEstimate.toString(),

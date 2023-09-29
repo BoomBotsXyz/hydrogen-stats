@@ -154,7 +154,7 @@ async function fetchCurrentEthPrice() {
   var pair = new ethers.Contract(pairAddress, pairAbi, provider)
   return new Promise((resolve, reject) => {
     withBackoffRetries(() => pair.getReserves()).then(reserves => {
-      resolve(reserves[0].mul(oneToken(18)).div(reserves[1]))
+      resolve(reserves[0].mul(WeiPerEther).div(reserves[1]))
     }).catch((e)=>{reject(e)})
   })
 }
