@@ -10,18 +10,12 @@ const { s3GetObjectPromise, s3PutObjectPromise, snsPublishError } = require("./.
 const { getProvider, getMulticallProvider, multicallChunkedDict, axiosGet } = require("./../utils/network")
 const { verifyParams } = require("./inputValidation")
 const { fetchNucleusState } = require("./../tracker/fetchNucleusState")
-//const { getTradeRequestsByTokens } = require("./getTradeRequestsByTokens")
-//const { adjustNucleusState } = require("./adjustNucleusState")
 const { findPaths } = require("./findPaths")
 const { optimizePaths } = require("./optimizePaths")
 const { encodeMarketOrderTransaction } = require("./encodeMarketOrderTransaction")
 const { getTokensByAddress } = require("./../utils/getTokens")
 const { oneToken, fetchCurrentEthPrice } = require("./../utils/price")
-/*
-const { getGraph } = require("./../utils/GraphLoader")
-const { selectBestPath } = require("./../utils/PathHelper")
-const { createPoolDataProvider } = require("./../utils/PoolDataProvider")
-*/
+
 // Define headers
 const headers = {
   "Content-Type": "application/json",
@@ -99,13 +93,6 @@ async function route(params) {
 
     simulationStatus: "UNATTEMPTED",
     simulationError: false,
-
-    //routeSummary: selectedPath.summarizePath(),
-    //routeDetailed: selectedPath,
-    //routeTxdatas: txdatas,
-    //routeTxdescriptions: txdescriptions,
-    //gasTokenInput: BN.from(gasTokenInput).toString(),
-    //calldata: calldata
   })
 }
 
@@ -132,8 +119,6 @@ exports.handler = async function(event) {
         body: e.stack
       }
     } else{
-      //console.log("caught error")
-      //console.log(e)
       await snsPublishError(event, e)
       return {
         statusCode: 500,
