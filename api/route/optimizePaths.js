@@ -51,7 +51,6 @@ function orderHops(hopsDict) {
     tokenset[hop.tokenA].prereqs.push(hop.descriptor)
   }
   // 2. process tokenset
-  console.log(JSON.stringify(tokenset, undefined, 2))
   var hopsArr = []
   // while not all hops processed
   while(hopsArr.length < Object.keys(hopsDict).length) {

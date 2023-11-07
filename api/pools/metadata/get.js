@@ -13,14 +13,14 @@ const headers = {
 }
 
 async function handle(event) {
-  var { chainID, poolID } = verifyParams(event["queryStringParameters"])
-  var s3Key = `${chainID}/hpt_metadata/${poolID}.json`
+  var { chainID, poolID, version } = verifyParams(event["queryStringParameters"])
+  var s3Key = `${chainID}/hpt_metadata/${version}/${poolID}.json`
   // try to get metadata from cache
   try {
     return await s3GetObjectPromise({ Bucket: "stats.hydrogendefi.xyz.data", Key: s3Key })
   } catch(e) {}
   // metadata not cached. fetch and cache state
-  await fetchNucleusState(chainID)
+  await fetchNucleusState(chainID, version)
   // try to get metadata from cache again
   try {
     return await s3GetObjectPromise({ Bucket: "stats.hydrogendefi.xyz.data", Key: s3Key })

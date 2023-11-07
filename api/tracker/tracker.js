@@ -11,8 +11,16 @@ const headers = {
 }
 
 async function tracker() {
-  var chainIDs = [8453, 84531, 80001]
-  await Promise.all(chainIDs.map(fetchNucleusState))
+  await Promise.all([
+    fetchNucleusState(8453, "v1.0.1"),
+    fetchNucleusState(84531, "v1.0.1"),
+    fetchNucleusState(80001, "v1.0.1"),
+  ])
+  await Promise.all([
+    fetchNucleusState(8453, "v1.0.0"),
+    fetchNucleusState(84531, "v1.0.0"),
+    fetchNucleusState(80001, "v1.0.0"),
+  ])
 }
 
 // Lambda handler

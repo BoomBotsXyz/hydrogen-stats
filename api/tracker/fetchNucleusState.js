@@ -13,19 +13,19 @@ const ABI_NUCLEUS = readJsonFile("./data/abi/Hydrogen/HydrogenNucleus.json")
 const ABI_ERC20 = readJsonFile("./data/abi/other/ERC20.json")
 
 const statsCacheBucket = 'stats-cdn.hydrogendefi.xyz'
+const defaultVersion = "v1.0.0"
 
-async function fetchNucleusState(chainID) {
+async function fetchNucleusState(chainID, version=defaultVersion) {
   // setup
-  var s3KeyState = `${chainID}/v1.0.0/state.json`
-  var s3KeyEvents = `${chainID}/v1.0.0/events.json`
-  var s3KeyTokens = `${chainID}/v1.0.0/tokens.json`
+  var s3KeyState = `${chainID}/${version}/state.json`
+  var s3KeyEvents = `${chainID}/${version}/events.json`
+  var s3KeyTokens = `${chainID}/${version}/tokens.json`
   var state = JSON.parse(await s3GetObjectPromise({ Bucket: statsCacheBucket, Key: s3KeyState }))
   var mcProvider = await getMulticallProvider(chainID)
   var provider = mcProvider._provider
   var networkSettings = getNetworkSettings(chainID)
   var latestBlock = (await provider.getBlockNumber()) - networkSettings.confirmations
   var nucleus = new ethers.Contract(state.nucleusAddress, ABI_NUCLEUS, provider)
-  //var nucleusMC = new multicall.Contract(state.nucleusAddress, ABI_NUCLEUS)
   // find deploy block
   if(state.deployBlock === -1) {
     state.deployBlock = await findDeployBlock(provider, nucleus.address)
@@ -33,6 +33,10 @@ async function fetchNucleusState(chainID) {
   }
   // scan for new events
   if(latestBlock > state.lastScannedBlock) {
+    var maxBlocksPerScan = 500_000 // scan max 500k blocks each time this function is called. makes catchup jobs more bearable
+    if(latestBlock > state.lastScannedBlock + maxBlocksPerScan) {
+      latestBlock = state.lastScannedBlock + maxBlocksPerScan
+    }
     var eventFilter = { address: nucleus.address, topics: [] }
     var newEvents = await fetchEvents(nucleus, eventFilter, state.lastScannedBlock+1, latestBlock)
     // if new events to process
@@ -195,7 +199,7 @@ async function fetchNucleusState(chainID) {
       }
     }
     // write to s3
-    var promises = newPoolIDs.map(poolID => storePool(chainID, state.nucleusAddress, poolID))
+    var promises = newPoolIDs.map(poolID => storePool(chainID, state.nucleusAddress, version, poolID))
     promises.push(s3PutObjectPromise({ Bucket: statsCacheBucket, Key: s3KeyState, Body: JSON.stringify(state), ContentType: "application/json" }))
     promises.push(s3PutObjectPromise({ Bucket: statsCacheBucket, Key: s3KeyEvents, Body: JSON.stringify(eventsData), ContentType: "application/json" }))
     // handle tokens

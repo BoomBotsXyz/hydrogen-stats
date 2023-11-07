@@ -78,14 +78,14 @@ function randomBackgroundColor(rng) {
   return `rgb(${r},${g},${b})`
 }
 
-function createPoolMetadata(chainID, poolID) {
+function createPoolMetadata(chainID, version, poolID) {
   var networkSettings = getNetworkSettings(chainID)
   var poolIDstr = poolID + ""
   var poolType = poolIDstr.substring(poolIDstr.length-1) == "1" ? "Limit Order Pool" : "Grid Order Pool"
   var metadata = {
     "description": "This NFT represents a Hydrogen Pool. The owner of this NFT can modify the pool and withdraw its tokens.",
     "external_url": `https://analytics.hydrogendefi.xyz/#/${networkSettings.chainNameAnalytics}/pools/${poolID}`,
-    "image": `https://assets.hydrogendefi.xyz/hpt/${chainID}/${poolID}.svg`,
+    "image": `https://assets.hydrogendefi.xyz/hpt/${chainID}/${version}/${poolID}.svg`,
     "name": `Hydrogen Pool Token #${poolID}`,
     "attributes": [{
       "trait_type": "Pool Type",
@@ -144,15 +144,15 @@ function createPoolImage(chainID, poolID, rng) {
   return svg
 }
 
-async function storePool(chainID, nucleusAddress, poolID) {
+async function storePool(chainID, nucleusAddress, version, poolID) {
   // assumes chainID, nucleusAddress, and poolID already verified
   var rng = createRandomNumberGenerator(`${chainID}_${nucleusAddress}_${poolID}`)
-  var metadata = createPoolMetadata(chainID, poolID)
+  var metadata = createPoolMetadata(chainID, version, poolID)
   var svg = createPoolImage(chainID, poolID, rng)
   // write to s3
   await Promise.all([
-    s3PutObjectPromise({ Bucket: "stats.hydrogendefi.xyz.data", Key: `${chainID}/hpt_metadata/${poolID}.json`, Body: JSON.stringify(metadata), ContentType: "application/json" }),
-    s3PutObjectPromise({ Bucket: "assets.hydrogendefi.xyz", Key: `hpt/${chainID}/${poolID}.svg`, Body: svg, ContentType: "image/svg+xml", CacheControl: "max-age=864000"})
+    s3PutObjectPromise({ Bucket: "stats.hydrogendefi.xyz.data", Key: `${chainID}/hpt_metadata/${version}/${poolID}.json`, Body: JSON.stringify(metadata), ContentType: "application/json" }),
+    s3PutObjectPromise({ Bucket: "assets.hydrogendefi.xyz", Key: `hpt/${chainID}/${version}/${poolID}.svg`, Body: svg, ContentType: "image/svg+xml", CacheControl: "max-age=864000"})
   ])
 }
 exports.storePool = storePool

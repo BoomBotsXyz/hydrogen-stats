@@ -2,8 +2,6 @@ const ethers = require("ethers")
 
 const CHAIN_IDS = [8453,84531,80001]//[1,5]
 const SWAP_TYPES = ["exactIn", "exactOut"]
-const NUCLEUS_VERSIONS = ["v1.0.0", ]
-const DEFAULT_VERSION = "v1.0.0"
 
 function verifyParams(inputParams) {
   if(!inputParams) throw({ name: "InputError", stack: "Parameters not given" })
@@ -12,13 +10,13 @@ function verifyParams(inputParams) {
   var [tokenOutAddress, err3] = verifyTokenOutAddress(inputParams)
   var [amount, err4] = verifyAmount(inputParams)
   var [swapType, err5] = verifySwapType(inputParams)
-  var [v, err6] = verifyVersion(inputParams)
+  var [version, err6] = verifyVersion(inputParams)
   var errs = [err1,err2,err3,err4,err5,err6].filter(err => !!err)
   if(errs.length > 0) {
     var errStr = errs.join("\n");
     if(errStr.length > 0) throw({ name: "InputError", stack: errStr });
   }
-  var params = { chainID, tokenInAddress, tokenOutAddress, amount, swapType, v }
+  var params = { chainID, tokenInAddress, tokenOutAddress, amount, swapType, version }
   return params
 }
 exports.verifyParams = verifyParams
@@ -84,13 +82,32 @@ function verifySwapType(inputParams) {
   }
 }
 
-function verifyVersion(inputParams) {
+function verifyVersion(params) {
+  var defaultVersion = "v1.0.0"
+  var allowedVersions = {
+    "v1.0.0": true,
+    "v1.0.1": true,
+  }
+  var versionRemap = {
+    "1.0.0": "v1.0.0",
+    "1.0.1": "v1.0.1",
+    "V1.0.0": "v1.0.0",
+    "V1.0.1": "v1.0.1",
+    "100": "v1.0.0",
+    "101": "v1.0.1",
+    "v100": "v1.0.0",
+    "v101": "v1.0.1",
+    "V100": "v1.0.0",
+    "V101": "v1.0.1",
+  }
+
   try {
-    var v = inputParams["v"]
-    if(!v) return [DEFAULT_VERSION, undefined]
-    if(!NUCLEUS_VERSIONS.includes(v)) return [undefined, `version '${v}' not supported`]
-    return [v, undefined]
+    var version = params["v"] || params["version"]
+    version = versionRemap[version] || version
+    if(!version) return [defaultVersion, undefined]
+    if(!allowedVersions[version]) return [undefined, `version '${version}' not supported`]
+    return [version, undefined]
   } catch(e) {
-    return [DEFAULT_VERSION, undefined]
+    return [defaultVersion, undefined]
   }
 }

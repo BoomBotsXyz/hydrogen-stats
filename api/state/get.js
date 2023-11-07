@@ -15,8 +15,8 @@ const headers = {
 }
 
 async function handle(event) {
-  var { chainID } = verifyParams(event["queryStringParameters"])
-  var nucleusState = await fetchNucleusState(chainID)
+  var { chainID, version } = verifyParams(event["queryStringParameters"])
+  var nucleusState = await fetchNucleusState(chainID, version)
   return JSON.stringify(nucleusState)
 }
 

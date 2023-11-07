@@ -29,12 +29,12 @@ const statsCacheBucket = 'stats-cdn.hydrogendefi.xyz'
 async function route(params) {
   params = verifyParams(params)
 
-  var { chainID, tokenInAddress, tokenOutAddress, amount, swapType } = params
+  var { chainID, tokenInAddress, tokenOutAddress, amount, swapType, version } = params
 
   // fetch state
   var [nucleusState, tokens, block, ethPrice] = await Promise.all([
-    fetchNucleusState(chainID),
-    s3GetObjectPromise({Bucket: statsCacheBucket, Key: `${chainID}/v1.0.0/tokens.json`}).then(res => JSON.parse(res)),
+    fetchNucleusState(chainID, version),
+    s3GetObjectPromise({Bucket: statsCacheBucket, Key: `${chainID}/${version}/tokens.json`}).then(res => JSON.parse(res)),
     getProvider(chainID).then(provider => provider.getBlock("latest")),
     fetchCurrentEthPrice(),
   ])
@@ -44,7 +44,6 @@ async function route(params) {
   // other return data
   var amountIn = Zero
   var amountOut = Zero
-  var gasUsePerMarketOrder = BN.from(185_000)
   var numMarketOrders = hops.length
   for(var pathIndex = 0; pathIndex < paths.length; pathIndex++) {
     var path = paths[pathIndex]
@@ -53,9 +52,8 @@ async function route(params) {
   }
   params.amountIn = amountIn
   params.amountOut = amountOut
-  var txdata = encodeMarketOrderTransaction(params, hops)
+  var {txdata, gasUseEstimate} = encodeMarketOrderTransaction(params, hops)
   var gasPriceWei = block.baseFeePerGas
-  var gasUseEstimate = gasUsePerMarketOrder.mul(numMarketOrders)
   var gasUseEstimateQuote = BN.from(gasPriceWei).mul(gasUseEstimate).mul(ethPrice).div(WeiPerEther)
   var tokensByAddress = getTokensByAddress(tokens)
   var tokenIn = tokensByAddress[tokenInAddress]
@@ -82,6 +80,7 @@ async function route(params) {
     quoteDecimals: quoteDecimals,
 
     protocol: "Hydrogen",
+    nucleusAddress: nucleusState.nucleusAddress,
     hops: hops,
     txdata: txdata,
 

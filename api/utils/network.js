@@ -69,6 +69,10 @@ async function _fetchEvents(contract, filter, startBlock, endBlock, depth) {
         return
       }
       */
+      if(startBlock == endBlock) {
+        console.error("_fetchEvents(): 0 blocks and still error")
+        throw e
+      }
       // log response size exceeded. recurse down
       if(startBlock == endBlock) throw("_fetchEvents(): 0 blocks and still error")
       var midBlock = Math.floor((startBlock+endBlock)/2)
